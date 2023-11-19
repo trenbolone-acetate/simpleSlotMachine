@@ -6,62 +6,80 @@ const images = [
     'images/diamond.png'
 ];
 
+let attemptsEnabled = true;
+
 const imgExtractionRegex = /<img.*?src=['"](.*?)['"].*?>/i;
-const slot1 = document.getElementById("slot1");
-const slot2 = document.getElementById("slot2");
-const slot3 = document.getElementById("slot3");
+
+let slots=[];
+const initTable = document.getElementById("slots");
+const tdInTable = document.getElementsByTagName("td");
+for (let i = 0; i < tdInTable.length; i++) {
+    slots[i] = document.getElementById(`slot${i+1}`); 
+}
+
 const startButton = document.getElementById("startButton");
+const playType = document.getElementById("playType");
 const result = document.getElementById("result");
 const score = document.getElementById("score");
 const attempts = 3;
 let userAttempts = 0;
 
-insertRandImage(3);
+insertRandImage(9);
 enterPlayerName();
 
 startButton.addEventListener("click", start);
-
-function start() {
-    if (userAttempts === attempts) {
-        const YOrN = prompt('You have no attempts left! Want more attempts? Y/N').toLowerCase();
-        YOrN == 'y'? location.href="https://www.paypal.com/myaccount/transfer/homepage/send/preview" : alert("Then reload the page.");
-        return;
-    }
-    startButton.disabled = true;
-
-    const inBtwImages = 10;
-
-    spinSlot(slot1, inBtwImages);
-    spinSlot(slot2, inBtwImages);
-    spinSlot(slot3, inBtwImages);
-}
-
-function spinSlot(slot, inBtwImages) {
-  let slotInBtwImages = 0;
-  const randomIntrvl = Math.floor(Math.random() * (100 - 60 + 1)) + 60;
-    const slotAction = setInterval(function () {
-        const randomIndex = generateRandIndex(images.length);
-        slot.innerHTML = `<img class ="slot-image" alt="slot1IMG" src='${images[randomIndex]}' width='100%' height='100%'>`;
-        slotInBtwImages++;
-
-        if (slotInBtwImages === inBtwImages) {
-            clearInterval(slotAction);
-            if (slot === slot3) {
-                end();
-            }
-        }
-    }, randomIntrvl);
-}
+playType.addEventListener("click", function() {
+    attemptsEnabled = !attemptsEnabled;
+    userAttempts=0;
+    let chosenString = playType.innerHTML === 'Play infinitely' ? 'Play with Attempts' : 'Play infinitely';
+    playType.innerHTML = chosenString.toString();
+});
 
 function generateRandIndex(max) {
     return Math.floor(Math.random() * max);
 }
 
 function insertRandImage(numberOfSlots) {
-    for (let i = 1; i <= numberOfSlots; i++) {
+    for (let i = 0; i < numberOfSlots; i++) {
         const randomIndex = generateRandIndex(images.length);
-        document.getElementById(`slot${i}`).innerHTML = `<img class ="slot-image" alt="slot1IMG" src='${images[randomIndex]}' width='100%' height='100%'>`;
+        slots[i].innerHTML = `<img class ="slot-image" alt="slotIMG" src='${images[randomIndex]}' width='100%' height='100%'>`;
     }
+}
+
+function start() {
+    if(attemptsEnabled){
+        if (userAttempts === attempts) {
+            const YOrN = prompt('You have no attempts left! Want more attempts? Y/N').toLowerCase();
+            YOrN === 'y'? location.href="https://www.paypal.com/myaccount/transfer/homepage/send/preview" : alert("Then reload the page.");
+            return;
+        }
+    }
+    else{
+        score.innerHTML=null;
+    }
+    startButton.disabled = true;
+
+    const inBtwImages = 10;
+
+    for (let i = 0; i < slots.length; i++) {
+        spinSlot(tdInTable[i], inBtwImages);
+    }
+}
+
+function spinSlot(slot, inBtwImages) {
+  let slotInBtwImages = 0;
+    const slotAction = setInterval(function () {
+        const randomIndex = generateRandIndex(images.length);
+        slot.innerHTML = `<img class ="slot-image" alt="slotIMG" src='${images[randomIndex]}' width='100%' height='100%'>`;
+        slotInBtwImages++;
+
+        if (slotInBtwImages === inBtwImages) {
+            clearInterval(slotAction);
+            if (slot === slots[slots.length-1]) {
+                end();
+            }
+        }
+    }, 40);
 }
 
 function enterPlayerName() {
@@ -74,25 +92,39 @@ function enterPlayerName() {
     } while (!playerName)
     document.getElementById("playerName").textContent = playerName;
 }
+function getSlot(slotNumber) {
+    return document.getElementById(`slot${slotNumber}`);
+}
 
 function end() {
-    const slot1ImgMatch = slot1.innerHTML.match(imgExtractionRegex);
-    const slot2ImgMatch = slot2.innerHTML.match(imgExtractionRegex);
-    const slot3ImgMatch = slot3.innerHTML.match(imgExtractionRegex);
-
-    if (slot1ImgMatch && slot2ImgMatch && slot3ImgMatch) {
-        const slot1Img = slot1ImgMatch[1];
-        const slot2Img = slot2ImgMatch[1];
-        const slot3Img = slot3ImgMatch[1];
-
-        if (slot1Img === slot2Img && slot2Img === slot3Img) {
+    const slotsImgMatch = [];
+    for (let i = 0; i < tdInTable.length; i++) {
+        slotsImgMatch[i] = slots[i].innerHTML.match(imgExtractionRegex);
+    }
+    for (let i = 0; i < slotsImgMatch.length; i++) {
+        if(!slotsImgMatch[i]){return};
+    }
+        const slotImg = [];
+        for (let i = 0; i < slotsImgMatch.length; i++) {
+            slotImg[i] = slotsImgMatch[i][1];
+        }
+        const isWin = (startIndex, endIndex) => {
+            for (let i = startIndex; i <= endIndex; i += 3) {
+                if (slotImg[i] !== slotImg[i + 1] || slotImg[i + 1] !== slotImg[i + 2]) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        
+        if (isWin(0, 2) || isWin(3, 5) || isWin(6, 8)) {
             result.style.cssText = 'color:#03b206;border: 3px solid #03b206;box-shadow: 0 0 10px #03b206;background-color:#005901;';
             result.innerHTML = 'YOU WON!!';
-        } else {
+        }            
+        else {
             result.style.cssText = 'color:#c70606;border: 3px solid #c70606;box-shadow: 0 0 10px #c70606;background-color:#4f0000;';
             result.innerHTML = 'You lost :(';
         }
-        score.textContent = `Round ${++userAttempts} out of ${attempts}`;
+        if(attemptsEnabled){score.textContent = `Round ${++userAttempts} out of ${attempts}`;}
         startButton.disabled = false;
-    }
 }
