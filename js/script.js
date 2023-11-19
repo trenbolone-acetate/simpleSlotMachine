@@ -51,7 +51,7 @@ function start() {
     checkForPlayType(attemptsEnabled);
     startButton.disabled = true;
 
-    const inBtwImages = 10;
+    const inBtwImages = 15;
 
     for (let i = 0; i < slots.length; i++) {
         spinSlot(tdInTable[i], inBtwImages);
@@ -124,28 +124,27 @@ function end() {
             }
             return true;
         };
-        if (isWin(0, 2)){
-            for (let i = 0; i <= 2; i++) {
+        if (isWin(0, 2) || isWin(3, 5) || isWin(6, 8)) {
+            let startIndex, endIndex;
+        
+            if (isWin(0, 2)) {
+                startIndex = 0;
+                endIndex = 2;
+            } else if (isWin(3, 5)) {
+                startIndex = 3;
+                endIndex = 5;
+            } else {
+                startIndex = 6;
+                endIndex = 8;
+            }
+        
+            for (let i = startIndex; i <= endIndex; i++) {
                 slots[i].style.backgroundColor = "#257728";
             }
+        
             result.style.cssText = 'color:#03b206;border: 3px solid #03b206;box-shadow: 0 0 10px #03b206;background-color:#005901;';
             result.innerHTML = 'YOU WON!!';
-        }
-        if(isWin(3, 5)){
-            for (let i = 3; i <= 5; i++) {
-                slots[i].style.backgroundColor = "#257728";
-            }
-            result.style.cssText = 'color:#03b206;border: 3px solid #03b206;box-shadow: 0 0 10px #03b206;background-color:#005901;';
-            result.innerHTML = 'YOU WON!!';
-        }
-        if(isWin(6, 8)){
-            for (let i = 6; i <= 8; i++) {
-                slots[i].style.backgroundColor = "#257728";
-            }
-            result.style.cssText = 'color:#03b206;border: 3px solid #03b206;box-shadow: 0 0 10px #03b206;background-color:#005901;';
-            result.innerHTML = 'YOU WON!!';
-        }
-        else {
+        } else {
             result.style.cssText = 'color:#c70606;border: 3px solid #c70606;box-shadow: 0 0 10px #c70606;background-color:#4f0000;';
             result.innerHTML = 'You lost :(';
         }
