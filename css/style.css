@@ -58,6 +58,15 @@ body {
 	margin: 1% 1% 1% auto;
 	border-radius: 1rem;
 }
+  #startButton:hover {
+	background-color: #007527;
+  }
+  
+  #startButton:disabled {
+	background-color: gray;
+	cursor: not-allowed;
+	color: rgb(0, 0, 0);
+  }
   #playType{
 	font-size: 16pt;
 	background-color: #3f6fb7;
@@ -68,16 +77,9 @@ body {
 	margin: 1% auto 1% 1%;
 	border-radius: 1rem;
   }
-  #startButton:hover {
-	background-color: #007527;
+  #playType:hover {
+	background-color: #1c3f72;
   }
-  
-  #startButton:disabled {
-	background-color: gray;
-	cursor: not-allowed;
-	color: rgb(0, 0, 0);
-  }
-  
   #result {
 	width: 30%;
 	margin: 1% auto;
