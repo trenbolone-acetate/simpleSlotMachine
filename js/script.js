@@ -47,6 +47,22 @@ function insertRandImage(numberOfSlots) {
 }
 
 function start() {
+    resetSlotsBg(slots);
+    checkForPlayType(attemptsEnabled);
+    startButton.disabled = true;
+
+    const inBtwImages = 10;
+
+    for (let i = 0; i < slots.length; i++) {
+        spinSlot(tdInTable[i], inBtwImages);
+    }
+}
+function resetSlotsBg(slots) {
+    slots.forEach(slot => {
+        slot.style.backgroundColor = "#656565";
+    });
+}
+function checkForPlayType(attemptsEnabled) {
     if(attemptsEnabled){
         if (userAttempts === attempts) {
             const YOrN = prompt('You have no attempts left! Want more attempts? Y/N').toLowerCase();
@@ -57,15 +73,7 @@ function start() {
     else{
         score.innerHTML=null;
     }
-    startButton.disabled = true;
-
-    const inBtwImages = 10;
-
-    for (let i = 0; i < slots.length; i++) {
-        spinSlot(tdInTable[i], inBtwImages);
-    }
 }
-
 function spinSlot(slot, inBtwImages) {
   let slotInBtwImages = 0;
     const slotAction = setInterval(function () {
@@ -116,11 +124,27 @@ function end() {
             }
             return true;
         };
-        
-        if (isWin(0, 2) || isWin(3, 5) || isWin(6, 8)) {
+        if (isWin(0, 2)){
+            for (let i = 0; i <= 2; i++) {
+                slots[i].style.backgroundColor = "#257728";
+            }
             result.style.cssText = 'color:#03b206;border: 3px solid #03b206;box-shadow: 0 0 10px #03b206;background-color:#005901;';
             result.innerHTML = 'YOU WON!!';
-        }            
+        }
+        if(isWin(3, 5)){
+            for (let i = 3; i <= 5; i++) {
+                slots[i].style.backgroundColor = "#257728";
+            }
+            result.style.cssText = 'color:#03b206;border: 3px solid #03b206;box-shadow: 0 0 10px #03b206;background-color:#005901;';
+            result.innerHTML = 'YOU WON!!';
+        }
+        if(isWin(6, 8)){
+            for (let i = 6; i <= 8; i++) {
+                slots[i].style.backgroundColor = "#257728";
+            }
+            result.style.cssText = 'color:#03b206;border: 3px solid #03b206;box-shadow: 0 0 10px #03b206;background-color:#005901;';
+            result.innerHTML = 'YOU WON!!';
+        }
         else {
             result.style.cssText = 'color:#c70606;border: 3px solid #c70606;box-shadow: 0 0 10px #c70606;background-color:#4f0000;';
             result.innerHTML = 'You lost :(';
